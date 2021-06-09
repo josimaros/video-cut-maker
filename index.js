@@ -1,14 +1,12 @@
-import readline from 'readline-sync'
+const robots = {
+  botInputUsuario:require('./src/rGetInfoConvidado')
+}
 
-function start () {
+async function start () {
   const content = {}
-  content.serchTerm = inputTermoDePesquisa()
 
-  function inputTermoDePesquisa ()  {
-    return readline.question('Digite o nome do conidado: ')
-  }
+  await robots.botInputUsuario(content)
 
-  console.log(content)
 }
 
 start()

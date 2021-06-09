@@ -6,10 +6,11 @@ ROBOT:
     ☐ seleciona o video original
     ☐ corta em partes de 10 minutos
   R.GET.INFO.CONVIDADO:
-    busca informações do convidado
-    separar as frases
-    gera as nametags
+    ✔ pergunta pelo termo de busca @done(21-06-08 13:21)
+    ☐ busca informações do convidado
+    ☐ separar as frases
+    ☐ gera as nametags
   R.TITULO.VIDEOS:
-    gerador de titulo dos videos
+    ☐ gerador de titulo dos videos
   R.UPLOAD.VIDEO:
         

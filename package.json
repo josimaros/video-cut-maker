@@ -1,6 +1,26 @@
 {
+  "name": "video-cut-maker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "dependencies": {
-    "readline-sync": "^1.4.10"
+    "algorithmia": "^0.3.10",
+    "readline-sync": "^1.4.10",
+    "sbd": "^1.0.19"
   },
-  "type": "module"
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josimaros/video-cut-maker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/josimaros/video-cut-maker/issues"
+  },
+  "homepage": "https://github.com/josimaros/video-cut-maker#readme"
 }
