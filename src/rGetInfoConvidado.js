@@ -1,18 +1,27 @@
-const readline = require('readline-sync')
+
 const Algorithmia = require('algorithmia')
 const deteccaoDeSentenca = require('sbd')
 
 async function getInfoConvidado(content) {
-  content.serchTerm = inputTermoDePesquisa()
+
+  console.log('iniciando robor de capturas de informações do convidado')
+
   content.wikipediaContentOriginal = await baixarConteudoDoWikipedia(content)
-  limparConteudo(content)
-  quebrancoConteudoEmSentencas(content)
+
+  if (!content.wikipediaContentOriginal) {
+    console.log('sem conteudo no wikipedia')
+  } else {
+    limparConteudo(content)
+    quebrancoConteudoEmSentencas(content)
+  }
 
   async function baixarConteudoDoWikipedia(content) {
+    console.log('baixando conteudo do wikipedia')
+
     try {
 
       const input = {
-        "articleName": content.serchTerm,
+        "articleName": content.nomeDoConvidado,
         "lang": "pt"
       }
 
@@ -21,52 +30,53 @@ async function getInfoConvidado(content) {
       const wikipediaAlgorithmia = client.algo("web/WikipediaParser/0.1.2")
       const wikipediaResponse = await wikipediaAlgorithmia.pipe(input)
       const wikipediaContent = wikipediaResponse.get()
-
       return wikipediaContent.content
 
     } catch (error) {
       console.log('erro ao baixar conteudo do wikepedia', error)
+      return false
     }
   }
 
-  function inputTermoDePesquisa() {
-    return readline.question('Digite o nome do conidado: ')
-  }
+  function limparConteudo(content) {
 
-  function limparConteudo(content){
     const semLinhasEmBrancoEMarcacoes = removeLinhasEmBrancoEMarcacoes(content.wikipediaContentOriginal)
     const semDatasEntreParenteses = removeDataEntreParenteses(semLinhasEmBrancoEMarcacoes)
     content.wikipediaContentLimpo = semDatasEntreParenteses
 
-    function removeLinhasEmBrancoEMarcacoes(text){
+    function removeLinhasEmBrancoEMarcacoes(text) {
+      console.log('iniciando a limpeza de linhas em branco')
       const todasAlLinhas = text.split('\n')
-      const semLinhasEmBrancoEMarcacoes = todasAlLinhas.filter( (linha) => {
+      const semLinhasEmBrancoEMarcacoes = todasAlLinhas.filter((linha) => {
         if (linha.trim().length === 0 || linha.trim().startsWith('=')) {
           return false
         }
         return true
       })
+      console.log('finalizando a limpeza de linhas em branco')
       return semLinhasEmBrancoEMarcacoes.join(' ')
     }
 
-    function removeDataEntreParenteses(text){
+    function removeDataEntreParenteses(text) {
       return text.replace(/\((?:\([^()]*\)|[^()])*\)/gm, '').replace(/  /g, ' ')
     }
 
   }
 
-  function quebrancoConteudoEmSentencas(content){
+  function quebrancoConteudoEmSentencas(content) {
     content.sentecas = []
     const sentencas = deteccaoDeSentenca.sentences(content.wikipediaContentLimpo)
-    sentencas.forEach( (sentenca) => {
+    sentencas.forEach((sentenca) => {
       content.sentecas.push({
-        text:sentenca,
+        text: sentenca,
         keyword: [],
-        images:[]
+        images: []
       })
     })
     console.log(content)
   }
+
+  console.log('Finalizando robor de capturas de informações do convidado')
 
 }
 module.exports = getInfoConvidado;

@@ -4,9 +4,16 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.0.20",
     "algorithmia": "^0.3.10",
+    "express": "^4.17.1",
+    "filesize": "^6.3.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "googleapis": "^76.0.0",
     "readline-sync": "^1.4.10",
-    "sbd": "^1.0.19"
+    "sbd": "^1.0.19",
+    "youtube-dl-exec": "^1.2.4",
+    "ytdl-core": "^4.8.2"
   },
   "devDependencies": {},
   "scripts": {
