@@ -11,7 +11,9 @@
     "fluent-ffmpeg": "^2.1.2",
     "googleapis": "^76.0.0",
     "readline-sync": "^1.4.10",
-    "sbd": "^1.0.19"
+    "sbd": "^1.0.19",
+    "youtube-dl-exec": "^1.2.4",
+    "ytdl-core": "^4.8.2"
   },
   "devDependencies": {},
   "scripts": {

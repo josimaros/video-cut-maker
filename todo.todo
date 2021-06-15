@@ -2,15 +2,8 @@ SISTEMA DE AUTOMAÇÃO DE VIDEOS
 
 
 ROBOT:
-  R.CUT.VIDEO:
-    ☐ seleciona o video original
-    ☐ corta em partes de 10 minutos
-  R.GET.INFO.CONVIDADO:
-    ✔ pergunta pelo termo de busca @done(21-06-08 13:21)
-    ☐ busca informações do convidado
-    ☐ separar as frases
-    ☐ gera as nametags
-  R.TITULO.VIDEOS:
-    ☐ gerador de titulo dos videos
-  R.UPLOAD.VIDEO:
-        
+  Input:
+    ☐ Url do poscast
+    ☐ nome do convidado
+  Info Convidado:
+    

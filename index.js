@@ -1,19 +1,22 @@
 const robots = {
-  botInputUsuario:require('./src/rGetInfoConvidado'),
+  botInputUser:require('./src/rInputUser'),
+  botDownVideoYoutube:require('./src/rDownVideo'),
   botCutVideo:require('./src/rCutVideo'),
-  botTituloVideo:require('./src/r.titulo-video'),
-  botUpvideo:require('./src/r-upload-video')
+  botGetInfoConvidado:require('./src/rGetInfoConvidado'),
+  botTituloVideo:require('./src/rTituloVideo'),
+  botUpvideo:require('./src/rUploadVideo'),
 }
 
 async function start () {
   const content = {}
 
-  // await robots.botInputUsuario(content)
+  await robots.botInputUser(content)
+  // await robots.botDownVideoYoutube(content)
+  await robots.botGetInfoConvidado(content)
   // await robots.botCutVideo()
-  // await robots.botTituloVideo()
-  console.log('inicio')
-  await robots.botUpvideo()
-  console.log('depois')
+  console.log(content)
+  // await robots.botUpvideo(content)
+
 
 }
 
