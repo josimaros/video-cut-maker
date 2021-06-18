@@ -5,13 +5,13 @@ const path = require('path')
 const fs = require('fs').promises
 const ytdl = require('ytdl-core')
 
-async function RCutVideo() {
+async function RCutVideo(content) {
 
-  const detalheDoVideo = await ytdl.getBasicInfo('https://www.youtube.com/watch?v=E4R_cEKecIU')
+  const detalheDoVideo = await ytdl.getBasicInfo(content.urlPodCast)
 
   const DuracaoVideo = 600
   let StartTime = 0
-  const totalDeCortes = parseInt(detalheDoVideo.videoDetails.lengthSeconds/600) + 1
+  const totalDeCortes = parseInt(detalheDoVideo.videoDetails.lengthSeconds/600)
 
   for (let I = 0; I <= totalDeCortes; I++) {
     console.log('contando o video')

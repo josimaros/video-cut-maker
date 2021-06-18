@@ -1,18 +1,21 @@
-
 const Algorithmia = require('algorithmia')
 const deteccaoDeSentenca = require('sbd')
+const youtubedl = require('youtube-dl-exec')
 
 async function getInfoConvidado(content) {
 
   console.log('iniciando robor de capturas de informações do convidado')
 
-  content.wikipediaContentOriginal = await baixarConteudoDoWikipedia(content)
+  // content.wikipediaContentOriginal = await baixarConteudoDoWikipedia(content)
+  content.wikipediaContentOriginal = false
 
   if (!content.wikipediaContentOriginal) {
     console.log('sem conteudo no wikipedia')
+    await getTagsEDescricao(content)
   } else {
     limparConteudo(content)
     quebrancoConteudoEmSentencas(content)
+    await getTagsEDescricao(content)
   }
 
   async function baixarConteudoDoWikipedia(content) {
@@ -36,6 +39,7 @@ async function getInfoConvidado(content) {
       console.log('erro ao baixar conteudo do wikepedia', error)
       return false
     }
+
   }
 
   function limparConteudo(content) {
@@ -73,7 +77,38 @@ async function getInfoConvidado(content) {
         images: []
       })
     })
-    console.log(content)
+  }
+
+  async function getTagsEDescricao(content) {
+
+    let descricaoConvidado = ''
+
+    const infoVideo = await youtubedl(content.urlPodCast, {
+      dumpSingleJson: true,
+      noWarnings: true,
+      noCallHome: true,
+      noCheckCertificate: true,
+      preferFreeFormats: true,
+      youtubeSkipDashManifest: true,
+      referer: content.urlPodCast
+    })
+
+    console.log(content.wikipediaContentOriginal)
+
+    if (content.wikipediaContentOriginal) {
+      for (let i = 0; i <= 15; i++) {
+        descricaoConvidado += content.sentecas[i].text;
+      }
+    }
+
+
+    content.tags = infoVideo.tags
+    content.descricao = 'Seja muito bem vindo ao eu cortei poscasts onde os cortes sao feitos totalmente automatizados.' +
+      '\n Se voce gosta do conteudo produzido, curte se inscreve e compartilha para ajudar o canal.' +
+      '\n Todas as informações do canais de onde foram tirados os cortes vão estar na descrição.' +
+      '\n \n ' + descricaoConvidado + 
+      '\n \n' +'Canal: ' + infoVideo.uploader + ' ' + infoVideo.channel_url +
+      '\n \n' + 'Contato: eucortei@gmail.com'
   }
 
   console.log('Finalizando robor de capturas de informações do convidado')
