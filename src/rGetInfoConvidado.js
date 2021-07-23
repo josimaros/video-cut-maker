@@ -1,13 +1,15 @@
 const Algorithmia = require('algorithmia')
 const deteccaoDeSentenca = require('sbd')
 const youtubedl = require('youtube-dl-exec')
+const ytdl = require('ytdl-core')
 
 async function getInfoConvidado(content) {
 
   console.log('iniciando robor de capturas de informações do convidado')
 
-  // content.wikipediaContentOriginal = await baixarConteudoDoWikipedia(content)
-  content.wikipediaContentOriginal = false
+  content.wikipediaContentOriginal = await baixarConteudoDoWikipedia(content)  
+
+  // content.wikipediaContentOriginal = false
 
   if (!content.wikipediaContentOriginal) {
     console.log('sem conteudo no wikipedia')
@@ -81,9 +83,11 @@ async function getInfoConvidado(content) {
 
   async function getTagsEDescricao(content) {
 
+    console.log('> [youtube-robot] Starting getTagsEDescricao para infomações de convidado')
+
     let descricaoConvidado = ''
 
-    const infoVideo = await youtubedl(content.urlPodCast, {
+    const detalheDoVideo = await youtubedl(content.urlPodCast, {
       dumpSingleJson: true,
       noWarnings: true,
       noCallHome: true,
@@ -93,25 +97,36 @@ async function getInfoConvidado(content) {
       referer: content.urlPodCast
     })
 
-    console.log(content.wikipediaContentOriginal)
-
-    if (content.wikipediaContentOriginal) {
-      for (let i = 0; i <= 15; i++) {
-        descricaoConvidado += content.sentecas[i].text;
-      }
+    // const detalheDoVideo = await ytdl.getBasicInfo(content.urlPodCast)
+    content.detalheDoVideo = {
+      title:detalheDoVideo.title,
+      tempoDoVideo:detalheDoVideo.duration
     }
 
+    if (content.sentecas) {
 
-    content.tags = infoVideo.tags
-    content.descricao = 'Seja muito bem vindo ao eu cortei poscasts onde os cortes sao feitos totalmente automatizados.' +
-      '\n Se voce gosta do conteudo produzido, curte se inscreve e compartilha para ajudar o canal.' +
-      '\n Todas as informações do canais de onde foram tirados os cortes vão estar na descrição.' +
-      '\n \n ' + descricaoConvidado + 
-      '\n \n' +'Canal: ' + infoVideo.uploader + ' ' + infoVideo.channel_url +
-      '\n \n' + 'Contato: eucortei@gmail.com'
+      for (let i = 0; i <= 10; i++) {
+          descricaoConvidado += content.sentecas[i].text;
+      }
+
+    //   for (i=0;i<= content.sentecas.length || i<= 15;i++) {
+    //     descricaoConvidado += content.sentecas[i].text || '';
+    //   }
+    }
+
+    content.tags = detalheDoVideo.tags
+    content.descricao = `Seja muito bem vindo ao eu cortei podcasts onde os cortes sao feitos totalmente automatizados.
+      \nSe voce gosta do conteudo produzido, curte se inscreve e compartilha para ajudar o canal.
+      \nTodas as informações do canais de onde foram tirados os cortes vão estar na descrição.
+      \n \n ${descricaoConvidado} 
+      \n \n Convidados: ${content.detalheDoVideo.title}
+      \n \n Canal: ${detalheDoVideo.channel} ${detalheDoVideo.uploader_url}
+      \n \n Contato: eucortei@gmail.com`
+
   }
 
   console.log('Finalizando robor de capturas de informações do convidado')
+  console.log(content)
 
 }
 module.exports = getInfoConvidado;

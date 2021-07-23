@@ -7,7 +7,6 @@ const { pipeline } = require('stream');
 async function RDownVidoYoutube(content) {
 
   console.log('Iniciando robor de download de videos do youtube')
-  console.log(content)
 
   const infoVideo = await youtubedl(content.urlPodCast, {
     dumpSingleJson: true,
@@ -22,15 +21,17 @@ async function RDownVidoYoutube(content) {
   for (let i = 0; i < infoVideo.formats.length; i++) {
     if (infoVideo.formats[i].ext === 'mp4' && infoVideo.formats[i].acodec !== 'none' && infoVideo.formats[i].height >= 720) {
 
-      fs.stat(path.resolve(__dirname, 'video', 'in', `original.${infoVideo.formats[i].ext}`), function (err, stats) {
-        if (err) {
-          return console.error(err);
-        }
-        fs.unlink(path.resolve(__dirname, 'video', 'in', `original.${infoVideo.formats[i].ext}`), function (err) {
-          if (err) return console.log(err);
-          console.log('file deleted successfully');
-        });
-      });
+      // fs.stat(path.resolve(__dirname, 'video', 'in', `original.${infoVideo.formats[i].ext}`), function (err, stats) {
+      //   if (err) {
+      //     console.error(err);
+      //   } else {
+      //     fs.unlink(path.resolve(__dirname, 'video', 'in', `original.${infoVideo.formats[i].ext}`), function (err) {
+      //       if (err) { console.log(err) } else {
+      //         console.log('file deleted successfully')
+      //       }
+      //     });
+      //   }
+      // });
 
       const file = fs.createWriteStream(path.resolve(__dirname, 'video', 'in', `original.${infoVideo.formats[i].ext}`));
 
