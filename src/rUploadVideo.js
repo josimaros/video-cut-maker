@@ -1,13 +1,25 @@
 const express = require('express')
 const google = require('googleapis').google
-const youtube = google.youtube({ version: 'v3'})
+const youtube = google.youtube({ version: 'v3' })
 const OAuth2 = google.auth.OAuth2
 const fs = require('fs')
+const fs2 = require('fs').promises
+const path = require('path')
 
-async function UploadVideoYoutube(content){
 
+async function UploadVideoYoutube(content) {
+
+  await getListaDeVideosUploads(content)
   await authenticateWithOAuth()
-  const videoInformation = await uploadVideo(content)
+
+  for (let i = 0; i < content.srcListVideos.length; i++) {
+    const videoInformation = await uploadVideo(
+      content.srcListVideos[i], 
+      fs.statSync(content.srcListVideos[i]).size, 
+      `Eu cortei podcats #${i} ${content.nomeDoConvidado}`, 
+      content.tags, 
+      content.descricao)
+  }
 
 
   async function authenticateWithOAuth() {
@@ -100,8 +112,57 @@ async function UploadVideoYoutube(content){
     }
   }
 
-  async function uploadVideo(content) {}
+  async function uploadVideo(dirPath, fileSize, title, tags, descricao) {
 
+    const videoFilePath = dirPath
+    const videoFileSize = fs.statSync(videoFilePath).size
+    const videoTitle = title
+    const videoTags = tags
+    const videoDescription = descricao
+
+
+    const requestParameters = {
+      part: 'snippet, status',
+      requestBody: {
+        snippet: {
+          title: videoTitle,
+          description: videoDescription,
+          tags: videoTags
+        },
+        status: {
+          privacyStatus: 'unlisted'
+        }
+      },
+      media: {
+        body: fs.createReadStream(videoFilePath)
+      }
+    }
+
+    console.log('> [youtube-robot] Starting to upload the video to YouTube')
+    const youtubeResponse = await youtube.videos.insert(requestParameters, {
+      onUploadProgress: onUploadProgress
+    })
+
+    console.log(`> [youtube-robot] Video available at: https://youtu.be/${youtubeResponse.data.id}`)
+    return youtubeResponse.data
+
+    function onUploadProgress(event) {
+      const progress = Math.round((event.bytesRead / videoFileSize) * 100)
+      console.log(`> [youtube-robot] ${progress}% completed`)
+    }
+  }
+
+
+  async function getListaDeVideosUploads(content) {
+    content.srcListVideos = []
+    listaDeArquivos = await fs2.readdir(path.resolve(__dirname, 'video', 'out'))
+    if (listaDeArquivos) {
+      for (i = 0; i < listaDeArquivos.length; i++) {
+        const video = path.resolve(__dirname, 'video', 'out', listaDeArquivos[i])
+        content.srcListVideos.push(video)
+      }
+    }
+  }
 }
 
 module.exports = UploadVideoYoutube
