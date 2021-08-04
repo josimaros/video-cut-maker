@@ -1,27 +1,21 @@
 const Algorithmia = require('algorithmia')
 const deteccaoDeSentenca = require('sbd')
-const youtubedl = require('youtube-dl-exec')
-const ytdl = require('ytdl-core')
 
 async function getInfoConvidado(content) {
 
-  console.log('iniciando robor de capturas de informações do convidado')
+  console.log('Robor[InfoConvidado] -> Iniciado')
 
-  content.wikipediaContentOriginal = await baixarConteudoDoWikipedia(content)  
-
-  // content.wikipediaContentOriginal = false
+  content.wikipediaContentOriginal = await baixarConteudoDoWikipedia(content)
 
   if (!content.wikipediaContentOriginal) {
-    console.log('sem conteudo no wikipedia')
-    await getTagsEDescricao(content)
+    console.log('Robor[InfoConvidado] -> sem conteudo no wikipedia')
   } else {
     limparConteudo(content)
     quebrancoConteudoEmSentencas(content)
-    await getTagsEDescricao(content)
   }
 
   async function baixarConteudoDoWikipedia(content) {
-    console.log('baixando conteudo do wikipedia')
+    console.log('Robor[InfoConvidado] -> conteudo no wikipedia encontrado')
 
     try {
 
@@ -35,13 +29,13 @@ async function getInfoConvidado(content) {
       const wikipediaAlgorithmia = client.algo("web/WikipediaParser/0.1.2")
       const wikipediaResponse = await wikipediaAlgorithmia.pipe(input)
       const wikipediaContent = wikipediaResponse.get()
+      console.log('Robor[InfoConvidado] -> salvando conteudo')
       return wikipediaContent.content
 
     } catch (error) {
-      console.log('erro ao baixar conteudo do wikepedia', error)
+      console.log('Robor[InfoConvidado] -> erro ao realizado download de conteudo do wikipedia', error)
       return false
     }
-
   }
 
   function limparConteudo(content) {
@@ -51,7 +45,7 @@ async function getInfoConvidado(content) {
     content.wikipediaContentLimpo = semDatasEntreParenteses
 
     function removeLinhasEmBrancoEMarcacoes(text) {
-      console.log('iniciando a limpeza de linhas em branco')
+      console.log('Robor[InfoConvidado] -> retirando linhas em branco do conteudo')
       const todasAlLinhas = text.split('\n')
       const semLinhasEmBrancoEMarcacoes = todasAlLinhas.filter((linha) => {
         if (linha.trim().length === 0 || linha.trim().startsWith('=')) {
@@ -59,17 +53,20 @@ async function getInfoConvidado(content) {
         }
         return true
       })
-      console.log('finalizando a limpeza de linhas em branco')
+      console.log('Robor[InfoConvidado] -> finalizado a retirada de lihnas em branco')
+
       return semLinhasEmBrancoEMarcacoes.join(' ')
     }
 
     function removeDataEntreParenteses(text) {
+      console.log('Robor[InfoConvidado] -> removendo data entre parenteses')
       return text.replace(/\((?:\([^()]*\)|[^()])*\)/gm, '').replace(/  /g, ' ')
     }
 
   }
 
   function quebrancoConteudoEmSentencas(content) {
+    console.log('Robor[InfoConvidado] -> quebrando texto em sentenças')
     content.sentecas = []
     const sentencas = deteccaoDeSentenca.sentences(content.wikipediaContentLimpo)
     sentencas.forEach((sentenca) => {
@@ -79,54 +76,10 @@ async function getInfoConvidado(content) {
         images: []
       })
     })
+    console.log('Robor[InfoConvidado] -> finalizando quebrando texto em sentenças')
   }
 
-  async function getTagsEDescricao(content) {
-
-    console.log('> [youtube-robot] Starting getTagsEDescricao para infomações de convidado')
-
-    let descricaoConvidado = ''
-
-    const detalheDoVideo = await youtubedl(content.urlPodCast, {
-      dumpSingleJson: true,
-      noWarnings: true,
-      noCallHome: true,
-      noCheckCertificate: true,
-      preferFreeFormats: true,
-      youtubeSkipDashManifest: true,
-      referer: content.urlPodCast
-    })
-
-    // const detalheDoVideo = await ytdl.getBasicInfo(content.urlPodCast)
-    content.detalheDoVideo = {
-      title:detalheDoVideo.title,
-      tempoDoVideo:detalheDoVideo.duration
-    }
-
-    if (content.sentecas) {
-
-      for (let i = 0; i <= 10; i++) {
-          descricaoConvidado += content.sentecas[i].text;
-      }
-
-    //   for (i=0;i<= content.sentecas.length || i<= 15;i++) {
-    //     descricaoConvidado += content.sentecas[i].text || '';
-    //   }
-    }
-
-    content.tags = detalheDoVideo.tags
-    content.descricao = `Seja muito bem vindo ao eu cortei podcasts onde os cortes sao feitos totalmente automatizados.
-      \nSe voce gosta do conteudo produzido, curte se inscreve e compartilha para ajudar o canal.
-      \nTodas as informações do canais de onde foram tirados os cortes vão estar na descrição.
-      \n \n ${descricaoConvidado} 
-      \n \n Convidados: ${content.detalheDoVideo.title}
-      \n \n Canal: ${detalheDoVideo.channel} ${detalheDoVideo.uploader_url}
-      \n \n Contato: eucortei@gmail.com`
-
-  }
-
-  console.log('Finalizando robor de capturas de informações do convidado')
-  console.log(content)
+  console.log('Robor[InfoConvidado] -> Finalizado')
 
 }
 module.exports = getInfoConvidado;

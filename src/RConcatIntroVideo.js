@@ -6,11 +6,15 @@ const fs = require('fs').promises
 
 
 async function RConcatIntroVideo(content) {
+  
+  console.log('Robor[colocaIntro] -> Iniciado')
 
   getListaDeVideosUploads()
 
 
   async function getListaDeVideosUploads(content) {
+
+    console.log('Robor[colocaIntro] -> listando para colocar intro')
 
     const listaDeArquivos = await fs.readdir(path.resolve(__dirname, 'video', 'out'))
 
@@ -18,9 +22,9 @@ async function RConcatIntroVideo(content) {
 
       let videoConcact = listaDeArquivos[I]
 
-      console.log('iniciando junção do video')
-      await concatVideo(videoConcact, I)
+      console.log('Robor[colocaIntro] -> iniciando junção de video')
 
+        await concatVideo(videoConcact, I)
     }
 
   }
@@ -54,8 +58,10 @@ async function RConcatIntroVideo(content) {
 
     }, 2000);
 
-
   }
+
+  console.log('Robor[colocaIntro] -> Iniciado')
+
 }
 
 module.exports = RConcatIntroVideo

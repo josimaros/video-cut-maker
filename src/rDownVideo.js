@@ -6,42 +6,20 @@ const { pipeline } = require('stream');
 
 async function RDownVidoYoutube(content) {
 
-  console.log('Iniciando robor de download de videos do youtube')
+  console.log('Robor[DownVidoYoutube] -> Iniciado')
+  console.log('Robor[DownVidoYoutube] -> Iniciano escolha do video de download')
+  for (let i = 0; i < content.infoVideo.formats.length; i++) {
+    if (content.infoVideo.formats[i].ext === 'mp4' && content.infoVideo.formats[i].acodec !== 'none' && content.infoVideo.formats[i].height >= 720) {
+      console.log('Robor[DownVidoYoutube] -> Criando arquivo de download')
+      const file = fs.createWriteStream(path.resolve(__dirname, 'video', 'in', `original.${content.infoVideo.formats[i].ext}`));
 
-  const infoVideo = await youtubedl(content.urlPodCast, {
-    dumpSingleJson: true,
-    noWarnings: true,
-    noCallHome: true,
-    noCheckCertificate: true,
-    preferFreeFormats: true,
-    youtubeSkipDashManifest: true,
-    referer: content.urlPodCast
-  })
-
-  for (let i = 0; i < infoVideo.formats.length; i++) {
-    if (infoVideo.formats[i].ext === 'mp4' && infoVideo.formats[i].acodec !== 'none' && infoVideo.formats[i].height >= 720) {
-
-      // fs.stat(path.resolve(__dirname, 'video', 'in', `original.${infoVideo.formats[i].ext}`), function (err, stats) {
-      //   if (err) {
-      //     console.error(err);
-      //   } else {
-      //     fs.unlink(path.resolve(__dirname, 'video', 'in', `original.${infoVideo.formats[i].ext}`), function (err) {
-      //       if (err) { console.log(err) } else {
-      //         console.log('file deleted successfully')
-      //       }
-      //     });
-      //   }
-      // });
-
-      const file = fs.createWriteStream(path.resolve(__dirname, 'video', 'in', `original.${infoVideo.formats[i].ext}`));
-
-      await download(infoVideo.formats[i].url, file)
-
+      await download(content.infoVideo.formats[i].url, file)
+      console.log('Robor[DownVidoYoutube] -> Finalizado')
     }
   }
 
   async function download(url, path) {
-    console.log('download iniciado')
+    console.log('Robor[DownVidoYoutube] -> download inciado')
     return new Promise(function (resolve, reject) {
       http.get(url, response => {
         pipeline(
@@ -49,10 +27,10 @@ async function RDownVidoYoutube(content) {
           path,
           err => {
             if (err) {
-              console.error('Pipeline failed.', err);
+              console.log('Robor[DownVidoYoutube] -> erro ao realizar download', err)
               reject()
             } else {
-              console.log('Pipeline succeeded.');
+              console.log('Robor[DownVidoYoutube] -> download finalizado')
               resolve()
             }
           }
@@ -61,7 +39,7 @@ async function RDownVidoYoutube(content) {
     })
   };
 
-  console.log('Finalizando robor de download de videos do youtube')
+  console.log('Robor[DownVidoYoutube] -> Finalizado')
 
 }
 
